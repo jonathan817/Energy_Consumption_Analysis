@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1562765750891.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "83370876",
+    "id" : "FB0280FB",
+    "lastKnownWriteTime" : 1562776618,
+    "last_content_update" : 1562776618476,
+    "path" : "~/UBIQUM/3 - IoT ANALYTICS/TASK_01/Scripts/IoT_Analytics/IoT_Analytics_1.R",
+    "project_path" : "IoT_Analytics_1.R",
+    "properties" : {
+        "cursorPosition" : "37,0",
+        "scrollLine" : "22",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

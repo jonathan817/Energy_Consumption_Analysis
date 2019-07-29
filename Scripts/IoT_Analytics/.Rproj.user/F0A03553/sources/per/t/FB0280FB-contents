@@ -1,0 +1,38 @@
+
+library(Rtools)
+library("DBI")
+library(RMySQL)
+library(dplyr)
+library(lubridate)
+
+con = dbConnect(MySQL(), user='deepAnalytics', password='Sqltask1234!', dbname='dataanalytics2018', host='data-analytics-2018.cbrosir2cswx.us-east-1.rds.amazonaws.com')
+
+dbListTables(con)
+
+dbListFields(con,'iris')
+
+irisALL <- dbGetQuery(con, "SELECT * FROM iris")
+
+irisSELECT <- dbGetQuery(con, "SELECT SepalLengthCm, SepalWidthCm FROM iris")
+
+yr_2006_all <- dbGetQuery(con, "SELECT * FROM yr_2006")
+yr_2007_all <- dbGetQuery(con, "SELECT * FROM yr_2007")
+yr_2008_all <- dbGetQuery(con, "SELECT * FROM yr_2008")
+yr_2009_all <- dbGetQuery(con, "SELECT * FROM yr_2009")
+yr_2010_all <- dbGetQuery(con, "SELECT * FROM yr_2010")
+
+yr_todos <- bind_rows(yr_2007_all, yr_2008_all, yr_2009_all)
+
+yr_todos <-cbind(yr_todos,paste(yr_todos$Date,yr_todos$Time), stringsAsFactors=FALSE)
+
+colnames(yr_todos)[11] <-"DateTime"
+
+yr_todos <- yr_todos[,c(ncol(yr_todos), 1:(ncol(yr_todos)-1))]
+
+yr_todos$DateTime <- as.POSIXct(yr_todos$DateTime, "%Y/%m/%d %H:%M:%S")
+
+attr(yr_todos$DateTime, "tzone") <- "Europe/Paris"
+
+yr_todos$year <- year(yr_todos$DateTime)
+
+
