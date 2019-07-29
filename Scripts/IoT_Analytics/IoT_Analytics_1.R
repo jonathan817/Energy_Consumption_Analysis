@@ -10,7 +10,6 @@ library(reshape2)
 library(reshape)
 library(ggplot2)
 library(plotly)
-#library(ggfortify)
 library(zoo)
 library(forecast)
 library(padr)
@@ -18,6 +17,7 @@ library(ggExtra)
 library(imputeTS)
 library(prophet)
 library(forecastHybrid)
+#library(ggfortify)
 
 options(scipen=99)
 
@@ -267,6 +267,7 @@ yr_todos_ts$Weekday <- weekdays(yr_todos_ts$DateTime)
 yr_todos_ts$hour <- hour(yr_todos_ts$DateTime)
 
 
+#-------------------------
 
 # Creation of Heat Calendar of NAs.
 
@@ -276,6 +277,8 @@ calendarHeat(yr_todos_ts$DateTime,
              values= yr_todos_ts$Sub_metering_1,
              varname= "Missing values",
              color= "r2b")
+
+#-------------------------
 
 
 # Spike Sara-Ignacio ####
@@ -327,13 +330,6 @@ autoplot(Activemonth_test) + autolayer(Activemonth_forec$mean, series ="HW")
 autoplot(spike_2_ts) + autolayer(Activemonth_forec$mean, series ="HW")
 
 accuracy(Activemonth_forec,Activemonth_test) # Capitulo 12.8 del libro.
-
-
-
-
-
-
-
 
 
 
@@ -663,8 +659,6 @@ accuracy(kitchen_energy_month_prophet_forecast[38:47, "yhat"], kitchen_energy_mo
 
 
 
-
-
 kitchen_energy_week <- yr_todos_ts %>% group_by(year,month,week) %>% 
   summarise (kitchen = sum(Sub_metering_1))
 
@@ -794,7 +788,6 @@ accuracy(laundry_energy_month_prophet_forecast[38:47, "yhat"], laundry_energy_mo
 
 
 
-
 laundry_energy_week <- yr_todos_ts %>% group_by(year,month,week) %>% 
   summarise (laundry_room = sum(Sub_metering_2))
 
@@ -897,7 +890,6 @@ autoplot(air_energy_month_ts_test) + autolayer(air_energy_month_hybrid_2_forecas
 
 
 
-
 # Prophet model.
 
 air_energy_month_2 <- yr_todos_ts %>% thicken("month") %>% group_by(DateTime_month) %>% summarise (y = sum(Sub_metering_3))
@@ -923,7 +915,6 @@ prophet_plot_components(air_energy_month_prophet, air_energy_month_prophet_forec
 dyplot.prophet(air_energy_month_prophet, air_energy_month_prophet_forecast)
 
 accuracy(air_energy_month_prophet_forecast[38:47, "yhat"], air_energy_month_2_test$y)
-
 
 
 air_energy_week <- yr_todos_ts %>% group_by(year,month,week) %>% 
@@ -970,109 +961,3 @@ write.csv(predicted_total_energy, "power_bi_3.csv")
 
 
 #--------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#--------------------
-
-# Heatmap
-
-start.date <- yr_todos[1,1]
-
-end.date <- yr_todos[2027288,1]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#--------------------
-
-list_2 <- list(total_energy_year, total_energy_month, total_energy_week, kitchen_energy_year, kitchen_energy_month,
-               kitchen_energy_week, laundry_energy_year, laundry_energy_month, laundry_energy_week, air_energy_year,
-               air_energy_month, air_energy_week)
-
-
-
-#--------------------
-
-
-# Spike Gabriel
-
-group <- c("year", "month", "week")
-
-gran <- list()
-
-for (i in 1:length(group)) {
-  gran[[i]] <- yr_todos_ts %>% thicken(group[i], colname=i) %>% group_by_at(i) %>%
-                                summarise(Global_active_powe = sum(Global_active_power), Sub_metering_1= sum (Sub_metering_1), Sub_metering_2= sum (Sub_metering_2), Sub_metering_3= sum (Sub_metering_3))
-}
-
-names(gran[[1]])
-
-lapply(gran, function(x) ggplot(x, aes(x=Global_active_powe)) + geom_density())
-        
-
-
-# Forma de Papaupa.
-
-frec <- c(1, 12, 52)
-
-for (i in 1:length(group)) {
-  gran [[i]] <- as.ts(yr_todos_ts %>% thicken(group[i], colname= "variable") %>% group_by(variable) %>%
-    summarise(Global_active_powe = sum(Global_active_power), Sub_metering_1= sum (Sub_metering_1), Sub_metering_2= sum (Sub_metering_2), Sub_metering_3= sum (Sub_metering_3)),
-    start= c(2006,12), frequency= frecs[i])
-}
-
-lapply (gran, function(x) ggplot(x, aes(x=Global_active_power) + geom_density()))
-
-
-# Power BI Spike. 
-
-power_bi <- yr_todos_ts %>% group_by(year,month) %>% mutate(total_energy = (Global_active_power)*1000/60) %>% 
-  summarise (total_energy = sum(total_energy), kitchen = sum(Sub_metering_1), laundry_room = sum (Sub_metering_2), water_air_systems = sum(Sub_metering_3))
-
-power_bi$id <- c(1:47)
-
-write.csv(power_bi, "power_bi.csv")
-        
-        
-
-
